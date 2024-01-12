@@ -24,7 +24,7 @@ function Game() {
   }
   useEffect(() => {
     axios
-      .get("https://www.ataifou1projects.com/hang/" + state.difficulty)
+      .get("https://www.ataifou1projects.com/hang/" + state.length)
       .then((res) => {
         setGameInfo({
           ...gameInfo,
@@ -33,14 +33,14 @@ function Game() {
         });
       })
       .catch((err) => console.log(err));
-  }, [state.difficulty]);
+  }, [state.length]);
 
   try {
     {
       /* if we navigate to game page without first choosing a difficulty, return
        * to intro page immediately */
     }
-    const { difficulty } = state;
+    const { length } = state;
 
     {
       /* register a hang man body part on the page and decrease livesRemaining */
