@@ -1,11 +1,22 @@
 from rest_framework import views
 from .serializers import Serializer
 from rest_framework.response import Response
-import nltk
-nltk.download('words')
-from nltk.corpus import words
 import random
 from django.shortcuts import render, redirect
+import os
+from django.templatetags.static import static
+import requests
+
+url = static('hangman/words.txt')
+response = requests.get(url)
+temp_list = response.content.decode('utf-8').splitlines()
+
+# take O(n) cost now by organizing words into lists of same length to avoid
+# doing it for every single new game later 
+words = {}
+for i in temp_list:
+    words.setdefault(len(i), []).append(i)
+
 
 def hangman(request):
     return render(request, 'hangman/index.html', {})
@@ -19,9 +30,4 @@ class View(views.APIView):
 
 def getWord(wordLength):
     if wordLength > 1 and wordLength < 11:
-        # initialize lists with words
-        # easy list contains words with <= 6 letters
-        # hard list contains words with 7-10 letters
-
-        word_list = [ w.lower() for w in words.words() if w.isalpha() and len(w) == wordLength ]
-        return random.choice(word_list)
+        return random.choice(words[wordLength])

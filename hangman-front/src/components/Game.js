@@ -4,7 +4,6 @@ import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import Man from "./game_components/Man";
 import Info from "./game_components/Info";
 import Guess from "./game_components/Guess";
-import axios from "axios";
 
 function Game() {
   const navigate = useNavigate();
@@ -23,16 +22,20 @@ function Game() {
      * call the API for a word and make it the game word */
   }
   useEffect(() => {
-    axios
-      .get("https://www.ataifou1projects.com/hang/" + state.length)
+    fetch("https://www.ataifou1projects.com/hang/" + state.length)
       .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(res);
+      })
+      .then((data) => {
         setGameInfo({
           ...gameInfo,
-          gameWord: (gameInfo.gameWord = res.data[0].word),
+          gameWord: (gameInfo.gameWord = data[0].word),
           ...gameInfo,
         });
-      })
-      .catch((err) => console.log(err));
+      });
   }, [state.length]);
 
   try {
