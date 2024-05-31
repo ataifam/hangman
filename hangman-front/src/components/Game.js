@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import "./game_components/App.css";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import Man from "./game_components/Man";
@@ -17,11 +17,28 @@ function Game() {
     wordDisplay: "",
   });
 
-  {
-    /* once difficulty choice has registered from intro,
-     * call the API for a word and make it the game word */
-  }
+
+  /* prevent update function from being recreated upon every component re-rendering
+   * so child component can use the function as a dependency in useEffect
+   */
+  const memoizedSetGameInfo = useCallback(
+    (data) => {
+      setGameInfo(prev => ({
+          ...prev,
+          wordDisplay: (prev.wordDisplay = "_ "
+          .repeat(data.length)
+          .substring(0, data.length * 2 - 1)),
+      }));
+    },
+    [],
+  );
+
+  /* once difficulty choice has registered from intro,
+   * call the API for a word and make it the game word */
   useEffect(() => {
+    if(state == null || state.length == null){
+      return navigate("/hangman-intro");
+    }
     fetch("https://www.ataifou1projects.com/hang/" + state.length)
       .then((res) => {
         if (res.ok) {
@@ -30,24 +47,20 @@ function Game() {
         return Promise.reject(res);
       })
       .then((data) => {
-        setGameInfo({
-          ...gameInfo,
-          gameWord: (gameInfo.gameWord = data[0].word),
-          ...gameInfo,
-        });
+        setGameInfo(prev => ({
+          ...prev,
+          gameWord: (prev.gameWord = data.word),
+          ...prev,
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+        return navigate("/hangman-intro");
       });
-  }, [state.length]);
+  }, [state, navigate]);
 
   try {
-    {
-      /* if we navigate to game page without first choosing a difficulty, return
-       * to intro page immediately */
-    }
-    const { length } = state;
-
-    {
-      /* register a hang man body part on the page and decrease livesRemaining */
-    }
+    /* register a hang man body part on the page and decrease livesRemaining */
     function loseLife() {
       document.querySelector(".life" + gameInfo.livesRemaining).style.display =
         "block";
@@ -59,9 +72,7 @@ function Game() {
       checkGameOver();
     }
 
-    {
-      /* increment correctGuesses */
-    }
+    /* increment correctGuesses */
     function getPoint() {
       setGameInfo({
         ...gameInfo,
@@ -71,10 +82,8 @@ function Game() {
       checkGameOver();
     }
 
-    {
-      /* we cannot modify the state of the original array,
-       * so create a new one w/ same vals including current guess */
-    }
+    /* we cannot modify the state of the original array,
+     * so create a new one w/ same vals including current guess */
     function updateGuessed(letter) {
       let auxArray = gameInfo.pastGuesses.slice();
       auxArray.push(letter);
@@ -85,17 +94,11 @@ function Game() {
       });
     }
 
-    {
-      /* use string concatenation to include current letter at position i;
-       * index i is scaled by 2 to correspond with spaces in word display */
-    }
+    /* use string concatenation to include current letter at position i;
+     * index i is scaled by 2 to correspond with spaces in word display */
     function updateDisplayWord(i, letter) {
-      {
-        /* use string concatenation to include current letter at position i */
-      }
-      {
-        /* index i is scaled by 2 to correspond with spaces in word display */
-      }
+      /* use string concatenation to include current letter at position i */
+      /* index i is scaled by 2 to correspond with spaces in word display */
       setGameInfo({
         ...gameInfo,
         wordDisplay: (gameInfo.wordDisplay =
@@ -105,16 +108,12 @@ function Game() {
       });
     }
 
-    {
-      /* after each answer submitted we continuously check the status of the game;
-       * if we have 0 lives remaining, we lost; otherwise, if our correct guesses
-       * == the length of gameWord, we won */
-    }
+    /* after each answer submitted we continuously check the status of the game;
+     * if we have 0 lives remaining, we lost; otherwise, if our correct guesses
+     * == the length of gameWord, we won */
     function checkGameOver() {
-      {
-        /* before navigating to endgame, we pass the game word, lives remaining,
-         * and outcome as state */
-      }
+      /* before navigating to endgame, we pass the game word, lives remaining,
+       * and outcome as state */
       if (gameInfo.livesRemaining === 0) {
         navigate("/hangman-endgame", {
           state: {
@@ -140,7 +139,7 @@ function Game() {
       <>
         <Man />
         <center>
-          <Info gameInfo={gameInfo} setGameInfo={setGameInfo} />
+          <Info gameInfo={gameInfo} memoizedSetGameInfo={memoizedSetGameInfo} />
           <Guess
             gameInfo={gameInfo}
             updateGuessed={updateGuessed}

@@ -7,28 +7,27 @@ export default function EndGame() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  {
-    /* once state.lives registers from Game view, use its value to show the
-     * same body parts of the hangman on game view. */
-  }
+  /* once state.lives registers from Game view, use its value to show the
+   * same body parts of the hangman on game view. */
   useEffect(() => {
+    if(state == null || state.lives == null){
+      return navigate("/hangman-intro");
+    }
     for (let w = 6; w > state.lives; w--) {
       document.querySelector(".life" + w).style.display = "block";
     }
-  }, [state.lives]);
+  }, [state, navigate]);
 
   try {
-    {
-      /* if we navigate to game page without first playing the game, return
-       * to intro page immediately */
-    }
-    const { word, lives, outcome } = state;
+    /* if we navigate to game page without first playing the game, return
+     * to intro page immediately */
+    const { word, outcome } = state;
     
     return (
       <center>
         <Man />
-        <h1>You {state.outcome}!</h1>
-        <h2>The word was: {state.word}</h2>
+        <h1>You {outcome}!</h1>
+        <h2>The word was: {word}</h2>
         <p>Try Again?</p>
         <button
           type="button"

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function Intro() {
   const navigate = useNavigate();
-  const [playerWins, s] = React.useState(() => {
+  const [playerWins] = React.useState(() => {
     const wins = localStorage.getItem("WINS");
     return wins === null ? 0 : parseInt(JSON.parse(wins));
   });

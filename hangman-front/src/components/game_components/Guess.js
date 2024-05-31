@@ -11,11 +11,9 @@ function Guess({
   const [letterGuess, setLetterGuess] = React.useState("");
   const [error, setError] = React.useState("");
 
-  {
-    /* only check guess if enter key or button was clicked
-     * check for invalid user input (no input, invalid character, or a past guess)
-     */
-  }
+  /* only check guess if enter key or button was clicked
+   * check for invalid user input (no input, invalid character, or a past guess)
+   */
   function validateInput(event) {
     setLetterGuess(() => letterGuess.toLowerCase());
     if (event.key === "Enter" || event.type === "click") {
@@ -32,26 +30,20 @@ function Guess({
     return false;
   }
 
-  {
-    /* answer is only checked if validation passes */
-  }
+  /* answer is only checked if validation passes */
   function checkAnswer(event) {
     if (validateInput(event)) {
       updateGuessed(letterGuess);
       let guessMatch = false;
       for (let i = 0; i < gameInfo.gameWord.length; i++) {
         if (gameInfo.gameWord.charAt(i) === letterGuess) {
-          {
-            /* set to true to indicate the letter exists for a first time in the word */
-          }
+          /* set to true to indicate the letter exists for a first time in the word */
           guessMatch = true;
           updateDisplayWord(i, letterGuess);
           getPoint();
         }
       }
-      {
-        /* if the letter does not exist at all in the word, decrease a life */
-      }
+      /* if the letter does not exist at all in the word, decrease a life */
       if (!guessMatch) {
         loseLife();
       }

@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework import routers
 from . import views
 
@@ -6,7 +6,7 @@ router = routers.DefaultRouter()
 
 app_name = 'hangman'
 urlpatterns = [
-    path('<int:wordLength>', views.View.as_view(), name='hang'),
+    path('<int:wordLength>', views.play, name='hang'),
     path('', views.hangman, name='hangman-front'),
-    path("^", include(router.urls))
+    re_path(r'^', include(router.urls))
 ]
